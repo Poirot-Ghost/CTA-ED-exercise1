@@ -1,7 +1,7 @@
 ---
 title: "CTA_exercise1_wordfreq"
-author: "Marion Lieutaud"
-date: "1/31/2024"
+author: "Ziyi Wei"
+date: "2/3/2025"
 output: html_document
 ---
 
@@ -459,8 +459,92 @@ ggplot(edbf_counts_both, aes(year, sum_wom / year_total, group=genre, color=genr
 
 ```{r}
 # show me
+# race-related words
+race_words <- c("race", "racial", "ethnicity", "ethnic", "diversity", "discrimination", 
+                "oppression", "privilege", "systemic racism", "bias", "colorism", 
+                "microaggression", "prejudice", "stereotype", "inclusion", "exclusion",
+                "xenophobia", "multicultural", "intersectionality", "marginalized")
+
+race_ethnic_words <- c(
+  # black
+  "black", "African", "African American", "Afro", "Afro-American", "BIPOC", 
+  "Black Lives Matter", "BLM", "slavery", "segregation", "Jim Crow", 
+  "blackface", "civil rights", "Tuskegee", "reparations",
+
+  # white
+  "white", "Caucasian", "Euro-American", "whiteness", "white privilege", 
+  "white supremacy", "colonialism", "settler", "imperialism", 
+
+  # Asian
+  "Asian", "Asian American", "Chinese", "Japanese", "Korean", "Filipino", "Vietnamese",
+  "South Asian", "Indian", "Pakistani", "Bangladeshi", "Desi", "Pacific Islander",
+  "East Asian", "Southeast Asian", "xenophobia", "yellowface", "model minority",
+  "anti-Asian", "Stop Asian Hate",
+
+  # Latin
+  "Latino", "Latina", "Latinx", "Hispanic", "Chicano", "Chicana", "Chicanx", 
+  "Mexican", "Puerto Rican", "Cuban", "Dominican", "Salvadoran", "Central American",
+  "South American", "mestizo", "immigration", "border", "ICE", "deportation", 
+  "DACA", "Dreamer", "undocumented",
+
+  # Original
+  "Indigenous", "Native American", "First Nations", "Aboriginal", "tribe", "reservation",
+  "Indian", "Navajo", "Cherokee", "Lakota", "Sioux", "Apache", "Inuit", "Métis",
+  "colonization", "genocide", "land rights", "sovereignty", "stolen land", 
+
+  # Mid East
+  "Middle Eastern", "Arab", "Arab American", "Persian", "Iranian", "Turk", "Syrian",
+  "Lebanese", "Palestinian", "Muslim", "Islamophobia", "Hijab", "Refugee", "diaspora"
+)
+
+racist_terms <- c("racial slur", "racist", "bigotry", "hate speech", "neo-nazi", 
+                  "KKK", "klan", "white nationalist", "hate crime", "lynching", 
+                  "apartheid", "ghetto", "segregation", "redlining", "Jim Crow", 
+                  "racial profiling", "stop and frisk", "police brutality", 
+                  "hate group", "alt-right", "dog whistle")
+
+race_related_words <- c(race_words, race_ethnic_words, racist_terms)
+
+edbf_term_counts$raceword <- as.integer(grepl(paste(race_related_words, collapse="|"), 
+                                            x = edbf_term_counts$word))
+
+head(edbf_term_counts)
 ```
 
+```{r}
+#get counts by year and word
+edbf_counts_race <- edbf_term_counts %>%
+  group_by(year) %>%
+  mutate(year_total = sum(n)) %>%
+  filter(raceword==1) %>%
+  summarise(sum_race = sum(n),
+            year_total= min(year_total))
+
+head(edbf_counts_race)
+```
+
+```{r, warning=F}
+ggplot(edbf_counts_race, aes(year, sum_race / year_total, group=1)) +
+  geom_line() +
+  xlab("Year") +
+  ylab("% race-related words") +
+  scale_y_continuous(labels = scales::percent_format(),
+                     expand = c(0, 0), limits = c(0, NA)) +
+  theme_tufte(base_family = "Helvetica") 
+```
+
+```{r, warning=F}
+ggplot(edbf_counts_race, aes(year, sum_race / year_total, group=1)) +
+  geom_line() +
+  geom_vline(xintercept = 2020, col="red") +
+  geom_text(aes(x=2020.1, label="Murder of George Floyd", y=.0025), 
+            colour="black", angle=90, text=element_text(size=8)) +
+  xlab("Year") +
+  ylab("% race-related words") +
+  scale_y_continuous(labels = scales::percent_format(),
+                     expand = c(0, 0), limits = c(0, NA)) +
+  theme_tufte(base_family = "Helvetica")
+```
 
 3. Knit your document (click 'Knit' towards the top of your screen) when you've completed your exercise. It should create an html output file. 
 
