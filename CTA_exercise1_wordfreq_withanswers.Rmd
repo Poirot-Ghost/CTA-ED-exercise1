@@ -67,12 +67,16 @@ Our next job is to cut down this dataset to size, including only those columns t
 
 ```{r}
 colnames(edbfdata)
+# or
+names(edbfdata)
 ```
 
 And then: 
 
 ```{r}
 glimpse(edbfdata)
+
+View(edbfdata)
 ```
 
 We can see that the description of each event is included in a column named "description" and the year of that event as "year." So for now we'll just keep these two. Remember: we're interested in this exercise firstly in the representation of gender and feminism in forms of cultural production given a platform at the Edinburgh International Book Festival. Given this, we are first and foremost interested in the reported content of each artist's event.
@@ -392,6 +396,23 @@ Do we notice anything about these names? What does this tell us about the potent
 ## Exercises
 
 1. Filter the books by genre (selecting e.g., "Literature" or "Children") and plot frequency of women-related words over time.
+
+1.1 First, just for practice, create a new dataset called 'youngestedbf'. Select variables 'year', 'genre' and 'age category', and filter the books so your new dataset only includes the 2 youngest age category (targeted towards 4-7 years old and 6-10 years old).
+```{r}
+names(edbfdata) # check again the variable names
+
+youngestedbf <- edbfdata %>% # specify the original dataset you are working off
+  select(year, genre, age_category) %>% # select the columns of interests
+  filter(age_category == "AGE 4 - 7" | age_category == "AGE 6 - 10") # select the rows of interest
+
+# let's check
+library(questionr)
+freq(youngestedbf$age_category)
+
+# to check your code is working as you develop it, it can be useful to test it regularly, for instance by executing %>% head() after each new line.
+```
+
+
 
 ```{r}
 # Go through the same process. I've highlighted the differences
